@@ -1,7 +1,9 @@
 #########################################################################################
 ## docker will invoke this file from ./.. dir in order to access code
 #########################################################################################
-FROM golang:1.21 as builder
+FROM golang:1.21 AS builder
+
+ARG BUILD_VERSION=0.1
 
 LABEL org.opencontainers.image.version=$BUILD_VERSION \
       org.opencontainers.image.authors="airenass@gmail.com" \
@@ -12,7 +14,6 @@ LABEL org.opencontainers.image.version=$BUILD_VERSION \
       release=$BUILD_VERSION \
       summary="This image is used to build listgo code" \
       description="This image is used to build listgo code" 
-ARG BUILD_VERSION=0.1
 
 WORKDIR /go/src/
 

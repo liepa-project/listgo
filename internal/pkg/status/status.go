@@ -16,6 +16,8 @@ const (
 	Transcription
 	// Rescore status
 	Rescore
+	// Whisper status
+	Whisper
 	// ResultMake status
 	ResultMake
 	// JoinResults status

@@ -1,7 +1,7 @@
 #########################################################################################
 ## docker will invoke this file from ../.. dir in order to access code
 #########################################################################################
-FROM airenas/list-builder:0.2.409-3f6985e as builder
+FROM airenas/list-builder:0.2.423-dfd8cc6 AS builder
 
 ARG BUILD_VERSION=0.1
 
@@ -9,7 +9,7 @@ COPY . /go/src
 
 RUN CGO_ENABLED=0 go build -o /go/bin/managerService -ldflags "-X main.version=$BUILD_VERSION" cmd/managerService/main.go
 #####################################################################################
-FROM alpine:3.15 as runner
+FROM alpine:3.15 AS runner
 
 ARG BUILD_VERSION=0.1
 

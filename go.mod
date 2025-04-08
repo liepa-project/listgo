@@ -12,7 +12,6 @@ require (
 	github.com/confluentinc/confluent-kafka-go v1.0.0
 	github.com/facebookgo/grace v0.0.0-20180706040059-75cf19382434
 	github.com/fsnotify/fsnotify v1.5.1
-	github.com/golang/protobuf v1.5.3
 	github.com/google/uuid v1.3.1
 	github.com/gorilla/mux v1.7.4
 	github.com/gorilla/websocket v1.4.2
@@ -36,6 +35,7 @@ require (
 
 require (
 	github.com/airenas/go-app v0.2.2 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect

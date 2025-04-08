@@ -28,6 +28,7 @@ type ServiceData struct {
 	DiarizationCh       <-chan amqp.Delivery
 	TranscriptionCh     <-chan amqp.Delivery
 	RescoreCh           <-chan amqp.Delivery
+	WhisperCh           <-chan amqp.Delivery
 	ResultMakeCh        <-chan amqp.Delivery
 	fc                  *utils.MultiCloseChannel
 	speechIndicator     SpeechIndicator
@@ -67,6 +68,7 @@ func StartWorkerService(data *ServiceData) error {
 	go listenQueue(data.DiarizationCh, diarizationFinish, data)
 	go listenQueue(data.TranscriptionCh, transcriptionFinish, data)
 	go listenQueue(data.RescoreCh, rescoreFinish, data)
+	go listenQueue(data.WhisperCh, whisperFinish, data)
 	go listenQueue(data.ResultMakeCh, resultMakeFinish, data)
 
 	return nil
@@ -206,13 +208,32 @@ func transcriptionFinish(d *amqp.Delivery, data *ServiceData) (bool, error) {
 
 // rescoreFinish processes rescore result messages
 // 1. logs status
-// 2. sends 'ResultMake' message
+// 2. sends 'Whisper' message
 func rescoreFinish(d *amqp.Delivery, data *ServiceData) (bool, error) {
 	var message messages.QueueMessage
 	if err := json.Unmarshal(d.Body, &message); err != nil {
 		return false, errors.Wrap(err, "Can't unmarshal message "+string(d.Body))
 	}
 	c, err := processStatus(&message, data, messages.Rescore, status.ResultMake)
+	if !c {
+		if err != nil {
+			cmdapp.Log.Error(err)
+		}
+		return true, err
+	}
+	return true, data.MessageSender.Send(messages.NewQueueMessageFromM(&message),
+		messages.Whisper, messages.ResultQueueFor(messages.Whisper))
+}
+
+// whisperFinish processes rescore result messages
+// 1. logs status
+// 2. sends 'ResultMake' message
+func whisperFinish(d *amqp.Delivery, data *ServiceData) (bool, error) {
+	var message messages.QueueMessage
+	if err := json.Unmarshal(d.Body, &message); err != nil {
+		return false, errors.Wrap(err, "Can't unmarshal message "+string(d.Body))
+	}
+	c, err := processStatus(&message, data, messages.Whisper, status.Whisper)
 	if !c {
 		if err != nil {
 			cmdapp.Log.Error(err)
