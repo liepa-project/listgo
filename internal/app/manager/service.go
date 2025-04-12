@@ -29,6 +29,7 @@ type ServiceData struct {
 	TranscriptionCh     <-chan amqp.Delivery
 	RescoreCh           <-chan amqp.Delivery
 	WhisperCh           <-chan amqp.Delivery
+	Res2EafCh           <-chan amqp.Delivery
 	ResultMakeCh        <-chan amqp.Delivery
 	fc                  *utils.MultiCloseChannel
 	speechIndicator     SpeechIndicator
@@ -70,6 +71,7 @@ func StartWorkerService(data *ServiceData) error {
 	go listenQueue(data.RescoreCh, rescoreFinish, data)
 	go listenQueue(data.WhisperCh, whisperFinish, data)
 	go listenQueue(data.ResultMakeCh, resultMakeFinish, data)
+	go listenQueue(data.Res2EafCh, res2ResFinish, data)
 
 	return nil
 }
@@ -267,7 +269,7 @@ func resultMakeFinish(d *amqp.Delivery, data *ServiceData) (bool, error) {
 			return true, err
 		}
 	}
-	c, err := processStatus(&message.QueueMessage, data, messages.ResultMake, status.Completed)
+	c, err := processStatus(&message.QueueMessage, data, messages.ResultMake, status.ResultMake)
 	if !c {
 		if err != nil {
 			cmdapp.Log.Error(err)
@@ -278,8 +280,33 @@ func resultMakeFinish(d *amqp.Delivery, data *ServiceData) (bool, error) {
 		err := data.MessageSender.Send(&message.QueueMessage, tq, "")
 		cmdapp.LogIf(err)
 	}
-	return true, data.InformMessageSender.Send(newInformMessage(&message.QueueMessage, messages.InformTypeFinished),
+	// return true, data.InformMessageSender.Send(newInformMessage(&message.QueueMessage, messages.InformTypeFinished),
+	// 	messages.Inform, "")
+	return true, data.MessageSender.Send(messages.NewQueueMessageFromM(&message.QueueMessage),
+		messages.Res2Eaf, messages.ResultQueueFor(messages.Res2Eaf))
+
+}
+
+// re2EafFinish processes rescore result messages
+// 1. logs status
+// 2. sends 'ResultMake' message
+func res2ResFinish(d *amqp.Delivery, data *ServiceData) (bool, error) {
+	var message messages.QueueMessage
+	if err := json.Unmarshal(d.Body, &message); err != nil {
+		return false, errors.Wrap(err, "Can't unmarshal message "+string(d.Body))
+	}
+	c, err := processStatus(&message, data, messages.Res2Eaf, status.Completed)
+	if !c {
+		if err != nil {
+			cmdapp.Log.Error(err)
+		}
+		return true, err
+	}
+	// return true, data.MessageSender.Send(messages.NewQueueMessageFromM(&message),
+	// 	messages.ResultMake, messages.ResultQueueFor(messages.ResultMake))
+	return true, data.InformMessageSender.Send(newInformMessage(&message, messages.InformTypeFinished),
 		messages.Inform, "")
+
 }
 
 // processStatus analyzes message response and saves status

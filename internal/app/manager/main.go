@@ -70,6 +70,7 @@ func run(cmd *cobra.Command, args []string) {
 	data.TranscriptionCh = makeQChannel(ch, msgChannelProvider.QueueName(messages.ResultQueueFor(messages.Transcription)))
 	data.RescoreCh = makeQChannel(ch, msgChannelProvider.QueueName(messages.ResultQueueFor(messages.Rescore)))
 	data.WhisperCh = makeQChannel(ch, msgChannelProvider.QueueName(messages.ResultQueueFor(messages.Whisper)))
+	data.Res2EafCh = makeQChannel(ch, msgChannelProvider.QueueName(messages.ResultQueueFor(messages.Res2Eaf)))
 	data.ResultMakeCh = makeQChannel(ch, msgChannelProvider.QueueName(messages.ResultQueueFor(messages.ResultMake)))
 
 	data.StatusSaver, err = mongo.NewStatusSaver(mongoSessionProvider)
@@ -101,6 +102,7 @@ func initQueues(prv *rabbit.ChannelProvider) error {
 			messages.Diarization, messages.ResultQueueFor(messages.Diarization),
 			messages.Transcription, messages.ResultQueueFor(messages.Transcription),
 			messages.Whisper, messages.ResultQueueFor(messages.Whisper),
+			messages.Res2Eaf, messages.ResultQueueFor(messages.Res2Eaf),
 			messages.Rescore, messages.ResultQueueFor(messages.Rescore),
 			messages.ResultMake, messages.ResultQueueFor(messages.ResultMake)}
 		for _, queue := range queues {

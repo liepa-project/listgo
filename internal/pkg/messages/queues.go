@@ -7,6 +7,8 @@ const (
 	Inform string = "Inform"
 	//Whisper
 	Whisper string = "Whisper"
+	//Whisper
+	Res2Eaf string = "Res2Eaf"
 	// SplitChannels queue
 	SplitChannels string = "SplitChannels"
 	// AudioConvert queue
@@ -46,7 +48,7 @@ const (
 	TopicStatusChange string = "StatusChange"
 )
 
-//ResultQueueFor creates result queus name for input queue
+// ResultQueueFor creates result queus name for input queue
 func ResultQueueFor(queue string) string {
 	return queue + "_Result"
 }

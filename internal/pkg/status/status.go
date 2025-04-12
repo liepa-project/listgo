@@ -1,6 +1,6 @@
 package status
 
-//Status represents transcription status
+// Status represents transcription status
 type Status int
 
 const (
@@ -20,6 +20,8 @@ const (
 	Whisper
 	// ResultMake status
 	ResultMake
+	// Res2Eaf status
+	Res2Eaf
 	// JoinResults status
 	JoinResults
 	// Completed status
@@ -30,12 +32,12 @@ var (
 	statusName = map[Status]string{Uploaded: "UPLOADED", Completed: "COMPLETED",
 		SplitChannels: "SplitChannels", AudioConvert: "AudioConvert", Diarization: "Diarization",
 		Transcription: "Transcription", Rescore: "Rescore",
-		ResultMake: "ResultMake", JoinResults: "JoinResults"}
+		ResultMake: "ResultMake", JoinResults: "JoinResults", Whisper: "Whisper", Res2Eaf: "Res2Eaf"}
 	nameStatus = map[string]Status{"UPLOADED": Uploaded, "COMPLETED": Completed,
 		"SplitChannels": SplitChannels,
 		"AudioConvert":  AudioConvert, "Diarization": Diarization,
 		"Transcription": Transcription, "Rescore": Rescore,
-		"ResultMake": ResultMake, "JoinResults": JoinResults}
+		"ResultMake": ResultMake, "JoinResults": JoinResults, "Whisper": Whisper, "Res2Eaf": Res2Eaf}
 )
 
 // Name return status as string
